@@ -5,6 +5,7 @@
 #global variables
 logfile_name=$(date +%Y%m%d)
 logfile="./log/${logfile_name}"
+logdir="./log"
 datafile="./data"
 
 #variables for printing and grids
@@ -16,6 +17,15 @@ normal_text=$(tput sgr0)
 logger () {
     echo $(date +%D" "%H:%M:%S) $1 >> ${logfile}
 }
+
+#check if log directory exists and if not create one
+if [ -d ${logdir} ]; then
+    logger "Log directory exists, logs input to ${logfile} "
+else
+    mkdir ./log
+    logger "Log directory created"
+fi
+
 
 #check if database file exists if not create it
 if [ -f ${datafile} ]; then

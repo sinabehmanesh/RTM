@@ -33,7 +33,7 @@ if [ $# -eq 1 ] && [ $1 == "status" ]; then
     #     echo $line | grep -v "^$"
     # done < $datafile
 	if [[ -s $datafile ]]; then
-    	column -t -s "|" -c ID,TASK,STATUS $datafile
+    	column -t -s "|" --table-columns ID,TASK,STATUS $datafile
 	else
 		echo -e "You don't have any existing tasks!\nTry: \"rtm --help\" to see how to add a new task"
 fi

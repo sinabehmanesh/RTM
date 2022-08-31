@@ -4,52 +4,44 @@
 
 #global variables
 logfile_name=$(date +%Y%m%d)
-logfile="./log/${logfile_name}"
-logdir="./log"
-datafile="./data"
+logfile=~/.rtm/log/$logfile_name
+logdir=~/.rtm/log
+datafile=~/.rtm/data
 
 #variables for printing and grids
 bold_text=$(tput bold)
 normal_text=$(tput sgr0)
 
-
 #loggin function
 logger () {
-    echo $(date +%D" "%H:%M:%S) $1 >> ${logfile}
+    echo "$(date +%D" "%H:%M:%S) $1 >> $logfile"
 }
 
 #check if log directory exists and if not create one
-if [ -d ${logdir} ]; then
-    logger "Log directory exists, logs input to ${logfile} "
-else
-    mkdir ./log
-    logger "Log directory created"
+if [[ ! -d "$logdir" ]]; then
+    mkdir -p ~/.rtm/log
 fi
 
 
 #check if database file exists if not create it
-if [ -f ${datafile} ]; then
-    logger "database file exists"
-else
-    # printf "database file not found, do you want to create one?[y/n] \n"
-    # read $database_create
-    # if [[ $database_create == "yes" ]]; then
-    #     touch ${datafile}
-    # fi
-    touch ${datafile}
+if [ ! -f $datafile ]; then
+    touch $datafile
 fi
-
 
 if [ $# -eq 1 ] && [ $1 == "status" ]; then
     # while read line; do
     #     echo $line | grep -v "^$"
     # done < $datafile
-    column -t -s "|" --table-columns ID,TASK,STATUS data 
+	if [[ -s $datafile ]]; then
+    	column -t -s "|" -c ID,TASK,STATUS $datafile
+	else
+		echo -e "You don't have any existing tasks!\nTry: \"rtm --help\" to see how to add a new task"
+fi
 
 #add tasks and insert them in data file
 elif [ $# -gt 1 ]; then
     if [ $1 == "add" ]; then
-        id=$(cat data | grep -v "^$" | wc -l )
+        id=$(cat $datafile | tail -n 1 | gawk -F' ' '{print $1}' )
         id=$(expr $id + 1)
         echo "${id} |${@: 2} | TODO " >> ${datafile}
         printf "Task added with id ${id}. \n"
@@ -69,14 +61,24 @@ elif [ $# -gt 1 ]; then
 
 #delete a task with the 
     if [ $1 == "del" ] || [ $1 == "delete" ]; then
-        currentstate=$(cat ${datafile} | grep -i $2)
-        desiredstate=$(awk "/^${currentstate}.*/{ print NR; exit }" ${datafile})
-        sed -i "${desiredstate}d" ${datafile}
+        task=$(cat ${datafile} | egrep "^$2")
+		echo $task
+        sed -i "$2 d" $datafile
 
         printf "Task ${bold_text}${taskname}${normal_text} Deleted! \n"
         logger "${currentstate} Deleted \n"
 
     fi
+elif [[ $1 = '-h' ]] || [[ $1 = '--help' ]]; then
+	echo -e "Usage: $0 COMMAND [STRING]
+	Example usage:
+	\tShow list of tasks:
+	\t\trtm status
+	\tAdd a task.
+	\t\trtm add Deploy Kubernetes Cluster for John
+	\tDelete a task:
+	\t\trtm del"
 else
-    printf "command not found"
+	echo "rtm: missing operand
+Try 'rtm --help' for more information."
 fi

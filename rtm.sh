@@ -3,7 +3,9 @@
 #author sina behmanesh 2024
 
 #Import all modules from dir modules
-source ./modules/*.sh
+source ./modules/logger.sh
+source ./modules/task.sh
+source ./modules/cli-output.sh
 
 #global variables
 datafile="./data"

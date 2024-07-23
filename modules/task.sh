@@ -9,9 +9,9 @@ function check_status {
         name=$(echo ${line} | cut -d '|' -f 2)
         status=$(echo ${line} | cut -d '|' -f 3)
         if [ ${status} == "TODO" ]; then
-            printf  "${id}\t\t${name}\t${YELLOW}${status}${NC} \n \n"  | grep -v "^$" 
+            printf  "${id}\t${YELLOW}${status}${NC}\t\t${name}\t\n \n"  | grep -v "^$" 
         elif [ ${status} == "DONE" ]; then
-            printf  "${id}\t\t${name}\t${GREEN}${status}${NC} \n \n"  | grep -v "^$"
+            printf  "${id}\t${GREEN}${status}${NC}\t\t${name}\t\n\n"  | grep -v "^$"
         else
             printf "No Tasks Found"
         fi

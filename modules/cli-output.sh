@@ -10,7 +10,7 @@ RED='\033[1;31m'
 NC='\033[0m'
 
 grid_header () {
-    printf  "%s \t\t" "ID"  "NAME" "STATUS"
+    printf  "%s \t" "ID"  "STATUS" " " "NAME"
     printf "\n\n"
 }
 

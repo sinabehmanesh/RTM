@@ -1,9 +1,13 @@
 # RTM
+![alt text](https://cdn.dribbble.com/users/32384/screenshots/3225544/media/3492fc2c4ca08e9cfcbf94c065c596fa.png)
 ### royall task management
-by using this tool you can add tasks and update them. there are two simple status for each task, **TODO** and **DONE** .
-You can delete tasks and editing tasks are not supported yet.
-this tool is built for **Bash** environtment and requires minimum to be functional.
+With this tool you can add tasks and update them, easily in your Linux bash terminal.
+there are two simple status for each task, **TODO** and **DONE** .
+You can delete tasks by their ID, editing tasks are not supported yet, it is planned for the next stable release.
+this tool is built for **Bash** environtment and requests the minimum to be functional.
 > do not forget to add rtm.sh as a executable in you system **$PATH**
+
+
 ## Commands:
 
 ### Status

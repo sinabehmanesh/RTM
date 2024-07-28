@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
-	cmd "main/command"
 	"os"
 	"strings"
+
+	cmd "main/command"
+	db "main/database"
 )
 
 func main() {
@@ -13,12 +15,14 @@ func main() {
 		log.Fatal("Wrong input. Run rtm --help")
 	}
 
+	local_db := db.Check_database()
+
 	args := os.Args[1:]
 	command := args[0]
 
 	switch command {
 	case "status":
-		cmd.Check_status()
+		cmd.Check_status(local_db)
 	case "add":
 		task := strings.Join(os.Args[1:], " ")
 		cmd.Add_task(task)

@@ -1,8 +1,12 @@
 package command
 
-import "fmt"
+import (
+	"fmt"
 
-func Check_status() {
+	"gorm.io/gorm"
+)
+
+func Check_status(local_db *gorm.DB) {
 	fmt.Println("this will check tasks")
 }
 

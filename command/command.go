@@ -2,25 +2,7 @@ package command
 
 import (
 	"fmt"
-
-	"gorm.io/gorm"
 )
-
-func Check_status(local_db *gorm.DB) {
-	fmt.Println("this will check tasks")
-}
-
-func Add_task(task string) {
-	fmt.Println("Task:", task, "added")
-}
-
-func Delete_task(id string) {
-	fmt.Println("Task:", id, "Deleted")
-}
-
-func Done_task(id string) {
-	fmt.Println("Task:", id, "is now Done")
-}
 
 func Help() {
 	fmt.Println("------")

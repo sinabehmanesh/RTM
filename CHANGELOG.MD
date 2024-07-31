@@ -2,10 +2,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
  
-## [v1.1]
+## [v2.0]
 ### Upcoming changes:
-- introduce editing tasks. a new function that can be invoked to edit a task by ints ID.
-- auto installation, the classic Curl + bash installation format.
+- Language will be changed to golang
+- Same features as the version 1.0 will be released.
+~~- introduce editing tasks. a new function that can be invoked to edit a task by ints ID.~~
+~~- auto installation, the classic Curl + bash installation format.~~
 
 ## [v1.0] - 2024-07-23
  

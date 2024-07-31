@@ -1,11 +1,19 @@
 # RTM
 ![alt text](https://cdn.dribbble.com/users/32384/screenshots/3225544/media/3492fc2c4ca08e9cfcbf94c065c596fa.png)
 ### royall task management
-With this tool you can add tasks and update them, easily in your Linux bash terminal.
+With this tool you can add tasks and update them, easily in your Linux/Windows terminal.
 there are two simple status for each task, **TODO** and **DONE** .
 You can delete tasks by their ID, editing tasks are not supported yet, it is planned for the next stable release.
-this tool is built for **Bash** environtment and requests the minimum to be functional.
-> do not forget to add rtm.sh as a executable in you system **$PATH**
+this tool is built for **CLI** environtment and requests the minimum to be functional.
+
+## Build
+to build and use this applications, easliy:
+- Clone source code
+- Build with `go build -o rtm main.go `
+- Output binary is the target binary, you can put it in you **USER** path.
+
+## Info
+This application uses sqlite to store tasks for each user, you can find the db file in you ~/.RTM/gorm.db
 
 
 ## Commands:

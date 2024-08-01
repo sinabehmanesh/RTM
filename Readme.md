@@ -33,4 +33,15 @@ you can list tasks and ids using command **rtm status**.
 this feature will be modified in future releases.
 > rtm done 1
 
+### Delete
+you can easily delete tasks by their ID, just get the latest status using status command and then try **rtm del ID**.
+both del and rm can be used, this will run a delete query on the table.
+
+
+### Export
+If you ever wanted to have a backup of you work, you can run **rtm export**.
+this command will create a backup from your current work status in the config directory.
+it also appends a date to the file name so the file can be recognized.
+
+
 Do not forget to write feedback!

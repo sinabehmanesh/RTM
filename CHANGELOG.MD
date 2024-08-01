@@ -2,12 +2,13 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [v2.1] 
+## [v2.2] 
 ### Upcoming changes:
 - introduce editing tasks, you can edit task description/name using edit command
-- ability to delete all tasks at once, also exporting them into a file.
 - auto installation for this task
 
+## [v2.1]
+- ability to export tasks into a file, export command.
 
 ## [v2.0]
 - Language will be changed to Golang

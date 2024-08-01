@@ -4,13 +4,23 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/user"
+	"strconv"
 	"strings"
+	"time"
 
 	cmd "main/command"
 	db "main/database"
 )
 
 func main() {
+	user, err := user.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	configdir := user.HomeDir + "/.RTM"
+
 	if len(os.Args) <= 1 {
 		log.Fatal("Wrong input. Run rtm --help")
 	}
@@ -73,6 +83,35 @@ func main() {
 			log.Fatal(result.Error)
 		} else {
 			fmt.Println("Task", task_id, "is now Done! Good Job.")
+		}
+
+	//Export
+	case "export":
+
+		var temp_task []db.Task
+		data := local_db.Find(&temp_task)
+		if data.Error != nil {
+			log.Fatal(data.Error)
+		}
+
+		now := time.Now()
+		timenow := now.Format(time.RFC3339)
+		export_file := configdir + "/dump-" + timenow
+
+		//File
+		file, err := os.Create(export_file)
+		if err != nil {
+			log.Fatal(err)
+		} else {
+
+			for _, item := range temp_task {
+				recordID := strconv.FormatUint(uint64(item.ID), 10)
+				record := fmt.Sprintf("%s \t %s \t %s \n", recordID, item.Status, item.Name)
+				_, err := file.WriteString(record)
+				if err != nil {
+					log.Fatal(err)
+				}
+			}
 		}
 
 	//Help

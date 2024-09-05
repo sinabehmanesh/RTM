@@ -60,7 +60,6 @@ func main() {
 			log.Fatal(result.Error)
 		} else {
 			fmt.Println("Task:", task.Name, "added")
-			fmt.Println(result.RowsAffected)
 		}
 
 	//Delete

@@ -1,15 +1,17 @@
 package command
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func Help() {
 	fmt.Println("------")
-	fmt.Println(" rtm [Option] [Command]")
-	fmt.Println("\n \t\t status \t\t Get the status of your tasks \t")
-	fmt.Println("\t\t add [TASK DESCRIPTION]\t Add tasks with name/description")
-	fmt.Println("\t\t del, rm [ID] \t\t Delete tasks by ID")
-	fmt.Println("\t\t done [ID] \t\t Update task status from todo to Done")
-	fmt.Println("\t\t export \t\t export tasks into a file, file format: [dump]-[RFC date]")
+	fmt.Println("rtm [command]")
+	fmt.Println()
+	fmt.Println("  ls             List tasks")
+	fmt.Println("  add TASK       Add a task")
+	fmt.Println("  edit ID        Edit a task name")
+	fmt.Println("  del ID         Delete a task")
+	fmt.Println("  done ID        Set task status to DONE")
+	fmt.Println("  undo ID        Set task status to TODO")
+	fmt.Println("  inp ID         Set task status to INP")
+	fmt.Println("  stop ID        Set task status to STOP")
 }

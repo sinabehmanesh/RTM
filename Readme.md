@@ -1,47 +1,86 @@
 # RTM
-![alt text](https://cdn.dribbble.com/users/32384/screenshots/3225544/media/3492fc2c4ca08e9cfcbf94c065c596fa.png)
+
 ### royall task management
-With this tool you can add tasks and update them, easily in your Linux/Windows terminal.
-there are two simple status for each task, **TODO** and **DONE** .
-You can delete tasks by their ID, editing tasks are not supported yet, it is planned for the next stable release.
-this tool is built for **CLI** environtment and requests the minimum to be functional.
+
+RTM is a small CLI task manager for Linux and Windows.
+It keeps things simple: every task has only an ID, a name, and a status.
+
+Task statuses are:
+
+- `TODO` - task is waiting to be started
+- `INP` - task is in progress
+- `DONE` - task is finished
+- `STOP` - task has been stopped
 
 ## Build
-to build and use this applications, easliy:
-- Clone source code
-- Build with `go build -o rtm main.go `
-- Output binary is the target binary, you can put it in you **USER** path.
 
-## Info
-This application uses sqlite to store tasks for each user, you can find the db file in you ~/.RTM/gorm.db
+Clone the repository and build it with:
 
+```bash
+go build -o rtm main.go
+```
 
-## Commands:
+Put the resulting binary somewhere in your `PATH`.
 
-### Status
-using Status command gives you a view of current tasks and their status.
-contains 3 columns, **ID**,**Name** and **Status**.
-> rtm status
+## Data
 
-### Add
-add tasks using rtm add command(id will assigns automatically).
-> rtm add fixing logging issue at elk
+RTM uses SQLite to store tasks locally for each user.
+The database is stored at:
 
-### Done
-use done command to change status from **TODO** to **DONE**, this command demands and id assigned to the task in order to update its status.
-you can list tasks and ids using command **rtm status**.
-this feature will be modified in future releases.
-> rtm done 1
+```text
+~/.RTM/gorm.db
+```
 
-### Delete
-you can easily delete tasks by their ID, just get the latest status using status command and then try **rtm del ID**.
-both del and rm can be used, this will run a delete query on the table.
+## Commands
 
+### List tasks
 
-### Export
-If you ever wanted to have a backup of you work, you can run **rtm export**.
-this command will create a backup from your current work status in the config directory.
-it also appends a date to the file name so the file can be recognized.
+```bash
+rtm ls
+```
 
+### Add a task
 
-Do not forget to write feedback!
+```bash
+rtm add fix logging issue at elk
+```
+
+New tasks always start with the `TODO` status.
+
+### Edit a task
+
+```bash
+rtm edit 1
+```
+
+RTM will show the current task name and ask for the new one.
+
+### Delete a task
+
+```bash
+rtm del 1
+```
+
+### Mark a task as done
+
+```bash
+rtm done 1
+```
+
+### Move a task back to TODO
+
+```bash
+rtm undo 1
+```
+
+### Mark a task as in progress
+
+```bash
+rtm inp 1
+```
+
+### Stop a task
+
+```bash
+rtm stop 1
+```

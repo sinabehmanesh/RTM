@@ -14,5 +14,4 @@ func Help() {
 	fmt.Println("  undo ID        Set task status to TODO")
 	fmt.Println("  inp ID         Set task status to INP")
 	fmt.Println("  stop ID        Set task status to STOP")
-	fmt.Println("  export         Export tasks to a file")
 }

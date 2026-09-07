@@ -1,32 +1,64 @@
-name: Build
+name: RTM CI
+
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review:
+    types: [submitted]
   push:
-    branches:
-      - main
-      - dev
+    branches: [main]
+
+permissions:
+  contents: read
+
 jobs:
-  build:
-    name: Build
+  lint:
+    name: Pre-commit
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Go
+        uses: actions/setup-go@v7
         with:
-          fetch-depth: 0
+          go-version-file: go.mod
+          cache: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Install pre-commit
+        run: python -m pip install --disable-pip-version-check pre-commit==4.6.1
+
+      - name: Run pre-commit
+        run: pre-commit run --all-files
+
+  build-and-test:
+    name: Build and smoke test
+    if: >-
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event_name == 'pull_request_review' && github.event.pull_request.head.sha || github.sha }}
+
+      - name: Setup Go
+        uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+
       - name: Build
-        run: go build main.go
-      - name: Test ADD
-        run: ./main add Test job number 1
-      - name: Test STATUS
-        run: ./main status
-      - name: Test DONE
-        run: ./main done 1
-      - name: Test STATUS
-        run: ./main status
-      - name: Test DELETE
-        run: ./main del 1
-      - name: Test STATUS
-        run: ./main status
+        run: go build -o rtm .
 
-
-
-        
+      - name: Smoke test
+        run: bash scripts/smoke-test.sh ./rtm

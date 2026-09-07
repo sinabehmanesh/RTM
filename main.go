@@ -1,11 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
 	"os/user"
-	"strconv"
 	"strings"
 	"time"
 
@@ -22,102 +22,172 @@ func main() {
 	configdir := user.HomeDir + "/.RTM"
 
 	if len(os.Args) <= 1 {
-		log.Fatal("Wrong input. Run rtm --help")
+		cmd.Help()
+		return
 	}
 
 	local_db := db.Check_database()
-
 	args := os.Args[1:]
 	command := args[0]
 
 	switch command {
-
-	//Status
-	case "status":
-		var temp_task []db.Task
-
-		status := local_db.Find(&temp_task)
-
-		if status.Error != nil {
-			log.Fatal(status.Error)
-		} else {
-			fmt.Println("ID \t Status \t Description")
-			for _, item := range temp_task {
-				if item.Status == "DONE" {
-					fmt.Println(item.ID, "\t\033[32m", item.Status, "\033[0m\t\t", item.Name)
-				} else {
-					fmt.Println(item.ID, "\t\033[34m", item.Status, "\033[0m\t\t", item.Name)
-				}
-			}
+	case "ls":
+		var tasks []db.Task
+		result := local_db.Order("id ASC").Find(&tasks)
+		if result.Error != nil {
+			log.Fatal(result.Error)
 		}
 
-	//ADD
+		fmt.Println("ID\tSTATUS\tTASK")
+		for _, task := range tasks {
+			fmt.Printf("%d\t%s\t%s\n", task.ID, colorStatus(task.Status), task.Name)
+		}
+
 	case "add":
-		task_description := strings.Join(os.Args[2:], " ")
-		task := db.Task{Name: task_description, Status: "TODO"}
+		if len(args) < 2 {
+			log.Fatal("Usage: rtm add TASK NAME")
+		}
+
+		taskName := strings.TrimSpace(strings.Join(args[1:], " "))
+		if taskName == "" {
+			log.Fatal("Task name cannot be empty")
+		}
+
+		task := db.Task{Name: taskName, Status: "TODO"}
 		result := local_db.Create(&task)
 		if result.Error != nil {
 			log.Fatal(result.Error)
-		} else {
-			fmt.Println("Task:", task.Name, "added")
+		}
+		fmt.Printf("Task %d added\n", task.ID)
+
+	case "edit":
+		if len(args) < 2 {
+			log.Fatal("Usage: rtm edit ID")
 		}
 
-	//Delete
-	case "del", "rm":
-		task_id := os.Args[2]
-		//Delete based on ID
-		delresult := local_db.Delete(&db.Task{}, task_id)
-		if delresult.Error != nil {
-			log.Fatal(delresult.Error)
-		} else {
-			fmt.Println("Task ID", task_id, "Deleted")
-		}
-
-	//Done
-	case "done":
-		task_id := os.Args[2]
-
-		result := local_db.Model(&db.Task{}).Where("ID = ?", task_id).Update("Status", "DONE")
+		var task db.Task
+		result := local_db.First(&task, args[1])
 		if result.Error != nil {
 			log.Fatal(result.Error)
-		} else {
-			fmt.Println("Task", task_id, "is now Done! Good Job.")
 		}
 
-	//Export
-	case "export":
-
-		var temp_task []db.Task
-		data := local_db.Find(&temp_task)
-		if data.Error != nil {
-			log.Fatal(data.Error)
-		}
-
-		now := time.Now()
-		timenow := now.Format(time.RFC3339)
-		export_file := configdir + "/dump-" + timenow
-
-		//File
-		file, err := os.Create(export_file)
+		fmt.Printf("New task name [%s]: ", task.Name)
+		reader := bufio.NewReader(os.Stdin)
+		newName, err := reader.ReadString('\n')
 		if err != nil {
 			log.Fatal(err)
-		} else {
-
-			for _, item := range temp_task {
-				recordID := strconv.FormatUint(uint64(item.ID), 10)
-				record := fmt.Sprintf("%s \t %s \t %s \n", recordID, item.Status, item.Name)
-				_, err := file.WriteString(record)
-				if err != nil {
-					log.Fatal(err)
-				}
-			}
 		}
 
-	//Help
+		newName = strings.TrimSpace(newName)
+		if newName == "" {
+			fmt.Println("Task unchanged")
+			return
+		}
+
+		result = local_db.Model(&task).Update("Name", newName)
+		if result.Error != nil {
+			log.Fatal(result.Error)
+		}
+		fmt.Printf("Task %d updated\n", task.ID)
+
+	case "del":
+		if len(args) < 2 {
+			log.Fatal("Usage: rtm del ID")
+		}
+		deleteTask(local_db, args[1])
+
+	case "done":
+		if len(args) < 2 {
+			log.Fatal("Usage: rtm done ID")
+		}
+		updateTaskStatus(local_db, args[1], "DONE")
+
+	case "undo":
+		if len(args) < 2 {
+			log.Fatal("Usage: rtm undo ID")
+		}
+		updateTaskStatus(local_db, args[1], "TODO")
+
+	case "inp":
+		if len(args) < 2 {
+			log.Fatal("Usage: rtm inp ID")
+		}
+		updateTaskStatus(local_db, args[1], "INP")
+
+	case "stop":
+		if len(args) < 2 {
+			log.Fatal("Usage: rtm stop ID")
+		}
+		updateTaskStatus(local_db, args[1], "STOP")
+
+	case "export":
+		var tasks []db.Task
+		result := local_db.Find(&tasks)
+		if result.Error != nil {
+			log.Fatal(result.Error)
+		}
+
+		timenow := time.Now().Format("2006-01-02T15-04-05")
+		exportFile := configdir + "/dump-" + timenow
+
+		file, err := os.Create(exportFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer file.Close()
+
+		for _, task := range tasks {
+			record := fmt.Sprintf("%d\t%s\t%s\n", task.ID, task.Status, task.Name)
+			if _, err := file.WriteString(record); err != nil {
+				log.Fatal(err)
+			}
+		}
+		fmt.Println("Exported to", exportFile)
+
 	case "--help", "help", "-h":
 		cmd.Help()
+
 	default:
-		fmt.Println("Please provide a proper input.")
-		fmt.Println("Type rtm --help for help")
+		fmt.Println("Unknown command.")
+		cmd.Help()
+	}
+}
+
+func updateTaskStatus(local_db interface {
+	Model(value interface{}) *gorm.DB
+}, taskID string, status string) {
+	result := local_db.Model(&db.Task{}).Where("ID = ?", taskID).Update("Status", status)
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+	if result.RowsAffected == 0 {
+		log.Fatal("Task not found")
+	}
+	fmt.Printf("Task %s -> %s\n", taskID, status)
+}
+
+func deleteTask(local_db *gorm.DB, taskID string) {
+	result := local_db.Delete(&db.Task{}, taskID)
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+	if result.RowsAffected == 0 {
+		log.Fatal("Task not found")
+	}
+	fmt.Printf("Task %s deleted\n", taskID)
+}
+
+func colorStatus(status string) string {
+	switch status {
+	case "TODO":
+		return "\033[34mTODO\033[0m"
+	case "INP":
+		return "\033[33mINP\033[0m"
+	case "DONE":
+		return "\033[32mDONE\033[0m"
+	case "STOP":
+		return "\033[31mSTOP\033[0m"
+	default:
+		return status
 	}
 }

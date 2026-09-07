@@ -29,10 +29,12 @@ go build -o rtm .
 
 ## CI
 
-For an open pull request, every new push runs the pre-commit checks.
+For a non-draft pull request, every new push/update runs the pre-commit checks.
 
-When a pull request review is submitted as **approved**, CI builds RTM and runs an end-to-end CLI smoke test against the approved PR commit.
+When a reviewer is requested, CI runs pre-commit, builds RTM, and runs the end-to-end CLI smoke test.
 
-Every push to `main` also builds RTM and runs the same smoke test.
+When a reviewer approves the pull request, CI runs pre-commit, builds RTM, and runs the same smoke test again against the approved PR commit.
+
+When the pull request is merged into `main`, CI builds RTM and runs the smoke test. Linting is not repeated for the merged commit.
 
 The smoke test verifies `add`, `ls`, `edit`, `inp`, `stop`, `undo`, `done`, and `del`. It is intentionally CI-only because it uses and removes `~/.RTM` on the disposable GitHub-hosted runner.

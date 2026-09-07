@@ -11,6 +11,8 @@ import (
 
 	cmd "main/command"
 	db "main/database"
+
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -153,9 +155,7 @@ func main() {
 	}
 }
 
-func updateTaskStatus(local_db interface {
-	Model(value interface{}) *gorm.DB
-}, taskID string, status string) {
+func updateTaskStatus(local_db *gorm.DB, taskID string, status string) {
 	result := local_db.Model(&db.Task{}).Where("ID = ?", taskID).Update("Status", status)
 	if result.Error != nil {
 		log.Fatal(result.Error)

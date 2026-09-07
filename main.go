@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/user"
 	"strings"
-	"time"
 
 	cmd "main/command"
 	db "main/database"
@@ -16,13 +14,6 @@ import (
 )
 
 func main() {
-	user, err := user.Current()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	configdir := user.HomeDir + "/.RTM"
-
 	if len(os.Args) <= 1 {
 		cmd.Help()
 		return
@@ -121,30 +112,6 @@ func main() {
 			log.Fatal("Usage: rtm stop ID")
 		}
 		updateTaskStatus(local_db, args[1], "STOP")
-
-	case "export":
-		var tasks []db.Task
-		result := local_db.Find(&tasks)
-		if result.Error != nil {
-			log.Fatal(result.Error)
-		}
-
-		timenow := time.Now().Format("2006-01-02T15-04-05")
-		exportFile := configdir + "/dump-" + timenow
-
-		file, err := os.Create(exportFile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer file.Close()
-
-		for _, task := range tasks {
-			record := fmt.Sprintf("%d\t%s\t%s\n", task.ID, task.Status, task.Name)
-			if _, err := file.WriteString(record); err != nil {
-				log.Fatal(err)
-			}
-		}
-		fmt.Println("Exported to", exportFile)
 
 	case "--help", "help", "-h":
 		cmd.Help()

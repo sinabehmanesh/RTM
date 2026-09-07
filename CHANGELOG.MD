@@ -1,6 +1,39 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v3.0.0] - 2026-09-07
+
+RTM v3 keeps the original project intentionally small while making the CLI practical for daily use.
+
+### Added
+- `rtm ls` to list tasks.
+- `rtm edit ID` to edit a task name interactively.
+- `rtm undo ID` to move a task back to `TODO`.
+- `rtm inp ID` to mark a task as `INP` (in progress).
+- `rtm stop ID` to mark a task as `STOP`.
+- Four task states: `TODO`, `INP`, `DONE`, and `STOP`.
+- Colored status output for the task list.
+- Argument validation and clearer errors for missing commands, missing IDs, and unknown tasks.
+- Pre-commit configuration with YAML checks, merge-conflict checks, whitespace checks, `gofmt`, and `go vet`.
+- GitHub Actions CI using GitHub-hosted Ubuntu runners.
+- End-to-end CLI smoke tests for `add`, `ls`, `edit`, `inp`, `stop`, `undo`, `done`, and `del`.
+- `CONTRIBUTING.md` with a short development and pre-commit guide.
+
+### Changed
+- Simplified the CLI around the core workflow: add, list, edit, delete, and change task state.
+- `status` was replaced by `ls`.
+- Task listing is ordered by ID and shows only ID, status, and task name.
+- Existing SQLite/GORM storage and the `~/.RTM/gorm.db` database location remain unchanged.
+- CI now follows the pull-request lifecycle:
+  - non-draft PR updates run linting,
+  - review requests and approvals run linting, build, and functional tests,
+  - merges to `main` run build and functional tests.
+
+### Removed
+- `export` command.
+- `rm` alias for task deletion; `del` is now the delete command.
+- Legacy two-state `TODO` / `DONE` workflow.
+
 ## [v2.2]
 ### Upcoming changes:
 - introduce editing tasks, you can edit task description/name using edit command

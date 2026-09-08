@@ -20,3 +20,9 @@ repos:
         entry: go vet ./...
         language: system
         pass_filenames: false
+
+      - id: sh-syntax
+        name: install.sh syntax
+        entry: sh -n
+        language: system
+        files: ^install\.sh$

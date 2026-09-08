@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 set -eu
 
+MIN_GIT_VERSION="2.20.0"
+MIN_GO_VERSION="1.22.5"
+
 REPO_URL="${RTM_REPO_URL:-https://github.com/sinabehmanesh/RTM.git}"
 INSTALL_ROOT="${RTM_INSTALL_DIR:-$HOME/.local/share/rtm}"
 SOURCE_DIR="$INSTALL_ROOT/source"
@@ -14,8 +17,65 @@ require_command() {
     fi
 }
 
+normalize_version() {
+    printf '%s\n' "$1" | sed -n 's/^\([0-9][0-9]*\(\.[0-9][0-9]*\)\{0,2\}\).*/\1/p'
+}
+
+version_at_least() {
+    current=$(normalize_version "$1")
+    required=$(normalize_version "$2")
+
+    [ -n "$current" ] || return 1
+    [ -n "$required" ] || return 1
+
+    old_ifs=$IFS
+    IFS=.
+    set -- $current
+    current_major=${1:-0}
+    current_minor=${2:-0}
+    current_patch=${3:-0}
+
+    set -- $required
+    required_major=${1:-0}
+    required_minor=${2:-0}
+    required_patch=${3:-0}
+    IFS=$old_ifs
+
+    if [ "$current_major" -gt "$required_major" ]; then
+        return 0
+    fi
+    if [ "$current_major" -lt "$required_major" ]; then
+        return 1
+    fi
+    if [ "$current_minor" -gt "$required_minor" ]; then
+        return 0
+    fi
+    if [ "$current_minor" -lt "$required_minor" ]; then
+        return 1
+    fi
+    [ "$current_patch" -ge "$required_patch" ]
+}
+
 require_command git
 require_command go
+
+GIT_VERSION=$(git --version | sed 's/^git version //')
+GO_VERSION=$(go version | sed -n 's/^go version go\([^ ]*\).*/\1/p')
+
+if ! version_at_least "$GIT_VERSION" "$MIN_GIT_VERSION"; then
+    echo "Error: Git $MIN_GIT_VERSION or newer is required. Found Git $GIT_VERSION." >&2
+    echo "Install or update Git, then run this installer again." >&2
+    exit 1
+fi
+
+if ! version_at_least "$GO_VERSION" "$MIN_GO_VERSION"; then
+    echo "Error: Go $MIN_GO_VERSION or newer is required. Found Go $GO_VERSION." >&2
+    echo "Install or update Go, then run this installer again." >&2
+    exit 1
+fi
+
+echo "Git $GIT_VERSION detected."
+echo "Go $GO_VERSION detected."
 
 mkdir -p "$INSTALL_ROOT" "$BIN_DIR"
 

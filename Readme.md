@@ -12,12 +12,64 @@ Task statuses are:
 - `DONE` - task is finished
 - `STOP` - task has been stopped
 
-## Build
+## Install
+
+The automatic installers require `git` and `go` to already be available in `PATH`.
+They clone RTM, build it, and add the RTM binary directory to your user `PATH`.
+Running the installer again updates the existing installation from `main` and rebuilds RTM.
+
+### Linux
+
+From a cloned repository:
+
+```bash
+sh install.sh
+```
+
+Or directly from GitHub:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sinabehmanesh/RTM/main/install.sh | sh
+```
+
+The default installation uses:
+
+```text
+source: ~/.local/share/rtm/source
+binary: ~/.local/bin/rtm
+```
+
+If `~/.local/bin` is not already in `PATH`, the installer adds it to your shell profile. Open a new terminal afterwards, or source the profile shown by the installer.
+
+### Windows
+
+From a cloned repository, run in Command Prompt:
+
+```bat
+install.bat
+```
+
+Or download and run the installer directly:
+
+```bat
+curl.exe -fsSL -o "%TEMP%\rtm-install.bat" https://raw.githubusercontent.com/sinabehmanesh/RTM/main/install.bat && call "%TEMP%\rtm-install.bat"
+```
+
+The default installation uses:
+
+```text
+source: %LOCALAPPDATA%\RTM\source
+binary: %LOCALAPPDATA%\RTM\bin\rtm.exe
+```
+
+The installer adds the binary directory to your user `PATH`. Open a new terminal after installation.
+
+## Manual build
 
 Clone the repository and build it with:
 
 ```bash
-go build -o rtm main.go
+go build -o rtm .
 ```
 
 Put the resulting binary somewhere in your `PATH`.

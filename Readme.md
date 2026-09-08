@@ -14,7 +14,13 @@ Task statuses are:
 
 ## Install
 
-The automatic installers require `git` and `go` to already be available in `PATH`.
+The automatic installers require:
+
+- Git `2.20.0` or newer
+- Go `1.22.5` or newer
+
+Both must be available in `PATH`. The installers validate the installed versions before making any changes and stop with a clear error if a dependency is missing or too old.
+
 They clone RTM, build it, and add the RTM binary directory to your user `PATH`.
 Running the installer again updates the existing installation from `main` and rebuilds RTM.
 

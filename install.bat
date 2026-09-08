@@ -1,6 +1,9 @@
 @echo off
 setlocal
 
+set "MIN_GIT_VERSION=2.20.0"
+set "MIN_GO_VERSION=1.22.5"
+
 set "REPO_URL=https://github.com/sinabehmanesh/RTM.git"
 if defined RTM_REPO_URL set "REPO_URL=%RTM_REPO_URL%"
 
@@ -13,13 +16,15 @@ if defined RTM_BIN_DIR set "BIN_DIR=%RTM_BIN_DIR%"
 
 where git >nul 2>&1
 if errorlevel 1 (
-    echo Error: git is required but was not found in PATH.
+    echo Error: Git %MIN_GIT_VERSION% or newer is required, but Git was not found in PATH.
+    echo Install Git and run this installer again.
     exit /b 1
 )
 
 where go >nul 2>&1
 if errorlevel 1 (
-    echo Error: go is required but was not found in PATH.
+    echo Error: Go %MIN_GO_VERSION% or newer is required, but Go was not found in PATH.
+    echo Install Go and run this installer again.
     exit /b 1
 )
 
@@ -28,6 +33,27 @@ if errorlevel 1 (
     echo Error: PowerShell is required to update the user PATH.
     exit /b 1
 )
+
+for /f "tokens=3" %%V in ('git --version') do set "GIT_VERSION=%%V"
+for /f "tokens=3" %%V in ('go version') do set "GO_VERSION=%%V"
+set "GO_VERSION=%GO_VERSION:go=%"
+
+powershell.exe -NoProfile -Command "$m=[regex]::Match($env:GIT_VERSION,'^\d+(?:\.\d+){1,2}'); if(-not $m.Success -or [version]$m.Value -lt [version]$env:MIN_GIT_VERSION){exit 1}"
+if errorlevel 1 (
+    echo Error: Git %MIN_GIT_VERSION% or newer is required. Found Git %GIT_VERSION%.
+    echo Install or update Git, then run this installer again.
+    exit /b 1
+)
+
+powershell.exe -NoProfile -Command "$m=[regex]::Match($env:GO_VERSION,'^\d+(?:\.\d+){1,2}'); if(-not $m.Success -or [version]$m.Value -lt [version]$env:MIN_GO_VERSION){exit 1}"
+if errorlevel 1 (
+    echo Error: Go %MIN_GO_VERSION% or newer is required. Found Go %GO_VERSION%.
+    echo Install or update Go, then run this installer again.
+    exit /b 1
+)
+
+echo Git %GIT_VERSION% detected.
+echo Go %GO_VERSION% detected.
 
 if not exist "%INSTALL_ROOT%" mkdir "%INSTALL_ROOT%"
 if errorlevel 1 exit /b 1

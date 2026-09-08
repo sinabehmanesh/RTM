@@ -1,6 +1,15 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- `install.sh` for automatic Linux installation and updates.
+- `install.bat` for automatic Windows installation and updates.
+- Automatic user `PATH` setup for the installed RTM binary.
+- Installer documentation for local and direct-from-GitHub usage.
+- Pre-commit shell syntax validation for `install.sh`.
+
 ## [v3.0.0] - 2026-09-07
 
 RTM v3 keeps the original project intentionally small while making the CLI practical for daily use.

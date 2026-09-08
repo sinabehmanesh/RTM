@@ -1,4 +1,5 @@
 @echo off
+setlocal
 
 set "REPO_URL=https://github.com/sinabehmanesh/RTM.git"
 if defined RTM_REPO_URL set "REPO_URL=%RTM_REPO_URL%"
@@ -22,6 +23,12 @@ if errorlevel 1 (
     exit /b 1
 )
 
+where powershell.exe >nul 2>&1
+if errorlevel 1 (
+    echo Error: PowerShell is required to update the user PATH.
+    exit /b 1
+)
+
 if not exist "%INSTALL_ROOT%" mkdir "%INSTALL_ROOT%"
 if errorlevel 1 exit /b 1
 
@@ -37,7 +44,7 @@ if exist "%SOURCE_DIR%\.git" (
     if errorlevel 1 exit /b 1
 ) else (
     if exist "%SOURCE_DIR%" (
-        echo Error: %SOURCE_DIR% exists but is not an RTM git checkout.
+        echo Error: "%SOURCE_DIR%" exists but is not an RTM git checkout.
         exit /b 1
     )
 
@@ -55,16 +62,16 @@ if errorlevel 1 (
 )
 popd
 
-set "RTM_BIN_DIR=%BIN_DIR%"
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$bin=$env:RTM_BIN_DIR; $path=[Environment]::GetEnvironmentVariable('Path','User'); if ([string]::IsNullOrWhiteSpace($path)) { $newPath=$bin } elseif (($path -split ';') -contains $bin) { exit 0 } else { $newPath=$path.TrimEnd(';')+';'+$bin }; [Environment]::SetEnvironmentVariable('Path',$newPath,'User')"
+set "RTM_PATH_VALUE=%BIN_DIR%"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$bin=$env:RTM_PATH_VALUE; $path=[Environment]::GetEnvironmentVariable('Path','User'); if ([string]::IsNullOrWhiteSpace($path)) { $newPath=$bin } elseif (($path -split ';') -contains $bin) { exit 0 } else { $newPath=$path.TrimEnd(';')+';'+$bin }; [Environment]::SetEnvironmentVariable('Path',$newPath,'User')"
 if errorlevel 1 (
     echo Warning: RTM was installed, but the user PATH could not be updated automatically.
-    echo Add this directory to PATH manually: %BIN_DIR%
+    echo Add this directory to PATH manually: "%BIN_DIR%"
     exit /b 1
 )
 
-set "PATH=%BIN_DIR%;%PATH%"
-set "RTM_BIN_DIR="
-
 echo RTM installed: %BIN_DIR%\rtm.exe
-echo Open a new terminal before using rtm from PowerShell or another shell.
+echo Open a new terminal before using rtm.
+
+endlocal
+exit /b 0

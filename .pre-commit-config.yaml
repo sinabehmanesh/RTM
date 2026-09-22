@@ -22,7 +22,7 @@ repos:
         pass_filenames: false
 
       - id: sh-syntax
-        name: install.sh syntax
+        name: shell script syntax
         entry: sh -n
         language: system
-        files: ^install\.sh$
+        files: ^(install|update)\.sh$

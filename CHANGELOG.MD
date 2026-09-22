@@ -8,7 +8,10 @@ All notable changes to this project will be documented in this file.
 - `install.bat` for automatic Windows installation and updates.
 - Automatic user `PATH` setup for the installed RTM binary.
 - Installer documentation for local and direct-from-GitHub usage.
-- Pre-commit shell syntax validation for `install.sh`.
+- Pre-commit shell syntax validation for installer and updater scripts.
+- `update.sh` for updating an installed RTM on Linux and WSL.
+- `update.ps1` for updating an installed RTM from PowerShell.
+- `rtm del all` to delete every task from the local RTM database.
 
 ## [v3.0.0] - 2026-09-07
 

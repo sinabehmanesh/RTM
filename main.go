@@ -85,7 +85,11 @@ func main() {
 
 	case "del":
 		if len(args) < 2 {
-			log.Fatal("Usage: rtm del ID")
+			log.Fatal("Usage: rtm del ID|all")
+		}
+		if args[1] == "all" {
+			deleteAllTasks(local_db)
+			return
 		}
 		deleteTask(local_db, args[1])
 
@@ -142,6 +146,14 @@ func deleteTask(local_db *gorm.DB, taskID string) {
 		log.Fatal("Task not found")
 	}
 	fmt.Printf("Task %s deleted\n", taskID)
+}
+
+func deleteAllTasks(local_db *gorm.DB) {
+	result := local_db.Where("1 = 1").Delete(&db.Task{})
+	if result.Error != nil {
+		log.Fatal(result.Error)
+	}
+	fmt.Printf("%d tasks deleted\n", result.RowsAffected)
 }
 
 func colorStatus(status string) string {

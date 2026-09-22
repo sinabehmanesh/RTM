@@ -10,6 +10,7 @@ func Help() {
 	fmt.Println("  add TASK       Add a task")
 	fmt.Println("  edit ID        Edit a task name")
 	fmt.Println("  del ID         Delete a task")
+	fmt.Println("  del all        Delete all tasks")
 	fmt.Println("  done ID        Set task status to DONE")
 	fmt.Println("  undo ID        Set task status to TODO")
 	fmt.Println("  inp ID         Set task status to INP")

@@ -70,6 +70,42 @@ binary: %LOCALAPPDATA%\RTM\bin\rtm.exe
 
 The installer adds the binary directory to your user `PATH`. Open a new terminal after installation.
 
+## Update
+
+RTM can be updated without reinstalling. The updater fetches the latest `main`, rebuilds the binary, and replaces the installed binary only after a successful build.
+
+The updater uses the same Git and Go minimum versions as the installer and expects RTM to have been installed first.
+
+### Linux / WSL
+
+From the installed source:
+
+```bash
+~/.local/share/rtm/source/update.sh
+```
+
+Or directly from GitHub:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/sinabehmanesh/RTM/main/update.sh | sh
+```
+
+### PowerShell
+
+From the installed source on Windows:
+
+```powershell
+pwsh -NoProfile -File "$env:LOCALAPPDATA\RTM\source\update.ps1"
+```
+
+Or directly from GitHub:
+
+```powershell
+irm https://raw.githubusercontent.com/sinabehmanesh/RTM/main/update.ps1 | iex
+```
+
+`update.ps1` also supports PowerShell on Linux and uses the Linux install paths when it is not running on Windows.
+
 ## Manual build
 
 Clone the repository and build it with:
@@ -118,6 +154,14 @@ RTM will show the current task name and ask for the new one.
 ```bash
 rtm del 1
 ```
+
+### Delete all tasks
+
+```bash
+rtm del all
+```
+
+This deletes every task in the local RTM database.
 
 ### Mark a task as done
 

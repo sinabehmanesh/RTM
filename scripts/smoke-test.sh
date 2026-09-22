@@ -59,4 +59,17 @@ if grep -Fq "Edited task" <<<"$output"; then
   exit 1
 fi
 
+"$RTM" add Second task
+"$RTM" add Third task
+output=$("$RTM" ls)
+assert_contains "$output" "Second task"
+assert_contains "$output" "Third task"
+
+"$RTM" del all
+output=$("$RTM" ls)
+if grep -Fq "Second task" <<<"$output" || grep -Fq "Third task" <<<"$output"; then
+  echo "Tasks still exist after 'rtm del all'"
+  exit 1
+fi
+
 echo "RTM smoke test passed"
